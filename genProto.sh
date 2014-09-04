@@ -4,7 +4,7 @@
 DIR="$(cd "$(dirname "$0")" && pwd )";
 
 function protocExists {
-	{ hash protoc 2>/dev/null; return 0; } || { echo >&2 "I require protoc but it's not installed.  Aborting."; exit 1; }
+	{ hash protoc 2>/dev/null; return 0; } || { echo >&2 "genProto.sh requires 'protoc' but it's not installed.  Aborting."; exit 1; }
 }
 
 function compileProto {
@@ -26,13 +26,14 @@ function dirExists {
 
 function cleanDestination {
 	file="$DIR"/.build;
-	if [ ! -f "$file" ]; then		
-		return;
-	fi;
 	destination=$(<$file)
-	rm -f "$file"
+	if [ -f "$file" ]; then		
+		rm -f "$file"
+	fi;
 	cd "$destination"
-	rm *.pb.h *.pb.cc
+	if [ $(ls -A "$destination") ]; then
+		rm *.pb.h *.pb.cc
+	fi
 	return;
 }
 
