@@ -62,7 +62,7 @@ function createDefines {
 	echo "" >> "$defines"
 	echo "" >> "$defines"
 	for i in $(ls *.pb.h); do 
-		echo "#include \"protocol/""$i"\" >> "$defines"
+		echo "#include \""$i"\" " >> "$defines"
 	done
 	echo "" >> "$defines"
 	echo "" >> "$defines"
