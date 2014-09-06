@@ -9,10 +9,15 @@ function protocExists {
 
 function compileProto {
 	if protocExists; then
-		for i in *.proto; do
-			protoc -I=$1 --cpp_out=$2 $1/$i;
-		done;
-		saveDest $2;
+		LS=$(ls -A "$1");
+		if [ "$LS" ]; then	
+				for i in *.proto; do
+					protoc -I=$1 --cpp_out=$2 $1/$i;
+				done;
+				saveDest $2;
+		else
+			echo "The directory is empty";
+		fi;
 	fi;
 	return
 }
@@ -87,13 +92,19 @@ function help {
 	echo " "
 	echo " -h or --help "
 	echo "        show this help"
-	
+	exit;
 	return;
 }
 
 source=$(pwd)
 dest=$(pwd)
 cleaned=0;
+params=$#
+
+if [ "$params" -eq 0 ]; 
+then
+	help;
+fi;
 
 while [[ $# > 0 ]];
 do
@@ -104,12 +115,17 @@ do
 		if dirExists $1; then
 			source="$1"
 			shift
+		else
+			help;
 		fi;
+		
 		;;
 		-o|--output)
 		if dirExists $1; then
 			dest="$1"
 			shift
+		else
+			help;
 		fi;
 		;;
 		-h|--help)
@@ -119,7 +135,13 @@ do
 		cleaned=1;
 		cleanDestination;
 		;;
+		*)
+		help;
 	esac
 done;
 
-if [ ! $cleaned -eq 1 ]; then compileProto $source $dest; createDefines; fi;
+
+if [ ! $cleaned -eq 1 ]; then 
+	compileProto $source $dest; 
+	createDefines; 
+fi;
